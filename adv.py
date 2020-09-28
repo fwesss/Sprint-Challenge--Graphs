@@ -20,35 +20,44 @@ room_graph = literal_eval(open(map_file, "r").read())
 world.load_graph(room_graph)
 
 # Print an ASCII map
-# world.print_rooms()
+world.print_rooms()
 
 player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
+traversal_path = []
+
+
 inverse = {"n": "s", "e": "w", "s": "n", "w": "e"}
+visited = {
+    player.current_room.id: {
+        "visits": 1,
+        "directions": {direction: 4 for direction in player.current_room.get_exits()},
+    }
+}
 
+while len(visited) < len(room_graph):
+    direction = max(
+        visited[player.current_room.id]["directions"],
+        key=visited[player.current_room.id]["directions"].get,
+    )
+    previous_room = player.current_room
+    player.travel(direction)
+    traversal_path.append(direction)
 
-def traverse(visited=set()) -> List[str]:
-    path = []
-    for direction in player.current_room.get_exits():
-        player.travel(direction)
+    if player.current_room.id not in visited:
+        visited[player.current_room.id] = {
+            "visits": 1,
+            "directions": {
+                direction: 4 for direction in player.current_room.get_exits()
+            },
+        }
+    else:
+        visited[player.current_room.id]["visits"] += 1
 
-        if player.current_room in visited:
-            player.travel(inverse[direction])
-        else:
-            visited.add(player.current_room)
-            path.append(direction)
-            path += traverse(visited)
-
-            player.travel(inverse[direction])
-            path.append(inverse[direction])
-
-    return path
-
-
-traversal_path = traverse()
-
+    visited[player.current_room.id]["directions"][inverse[direction]] -= 1
+    visited[previous_room.id]["directions"][direction] -= 1
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
