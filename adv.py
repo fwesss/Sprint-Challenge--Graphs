@@ -76,13 +76,13 @@ def traverse(iterations=1) -> None:
         possible_paths.append(traversal_path)
 
     path_file = open("best-path.txt", "r")
-    first, *middle, last = path_file.read().split()
+    _, *_, last = path_file.read().split()
 
     if len(min(possible_paths, key=len)) < int(last):
         print(min(possible_paths, key=len), file=open("best-path.txt", "w"))
         print(len(min(possible_paths, key=len)), file=open("best-path.txt", "a"))
         print(
-            f"\nShortest path found was {len(min(possible_paths, key=len))} moves long.\nThis is shortest path found yet so it was written to 'best-path.txt'\n"
+            f"\nShortest path found was {len(min(possible_paths, key=len))} moves long.\nThis is the shortest path found yet so it was written to 'best-path.txt'\n"
         )
     else:
         print(
